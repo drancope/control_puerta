@@ -5,7 +5,7 @@
 #define TRUE 1
 #define FALSE 0
 // If using the breakout with SPI, define the pins for SPI communication.
-#define SOLOMOTOR
+//#define SOLOMOTOR
 
 #define PN532_SCK  (13)
 #define PN532_MOSI (11)

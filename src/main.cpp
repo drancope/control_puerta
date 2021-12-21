@@ -2,6 +2,8 @@
 #include <Adafruit_PN532.h>
 #include <Servo.h>
 
+#define TRUE 1
+#define FALSE 0
 // If using the breakout with SPI, define the pins for SPI communication.
 #define PN532_SCK  (13)
 #define PN532_MOSI (11)
@@ -68,13 +70,13 @@ void loop(void) {
   // 'uid' will be populated with the UID, and uidLength will indicate
   // if the uid is 4 bytes (Mifare Classic) or 7 bytes (Mifare Ultralight)
   success = nfc.readPassiveTargetID(PN532_MIFARE_ISO14443A, &uid[0], &uidLength);
-  uint8_t autorizado = { 4, 112, 29, 34, 151, 60, 128 };
+  uint8_t autorizado[] = { 4, 112, 29, 34, 151, 60, 128 };
 
   if (success) {
     Serial.println("Found a card!");
     Serial.print("UID Length: ");Serial.print(uidLength, DEC);Serial.println(" bytes");
     Serial.print("UID Value: ");
-    bool exito = TRUE;
+    bool exito = true;
     for (uint8_t i=0; i < uidLength; i++)
     {
       Serial.print(" 0x");Serial.print(uid[i], HEX);

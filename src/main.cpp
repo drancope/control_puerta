@@ -5,6 +5,8 @@
 #define TRUE 1
 #define FALSE 0
 // If using the breakout with SPI, define the pins for SPI communication.
+#define SOLOMOTOR
+
 #define PN532_SCK  (13)
 #define PN532_MOSI (11)
 #define PN532_SS   (10)
@@ -20,8 +22,9 @@
 
 // Use this line for a breakout with a SPI connection:
 Adafruit_PN532 nfc(PN532_SCK, PN532_MISO, PN532_MOSI, PN532_SS);
+#ifndef SOLOMOTOR
 Servo servoMotor;
-
+#endif
 // Use this line for a breakout with a hardware SPI connection.  Note that
 // the PN532 SCK, MOSI, and MISO pins need to be connected to the Arduino's
 // hardware SPI SCK, MOSI, and MISO pins.  On an Arduino Uno these are
@@ -30,39 +33,41 @@ Servo servoMotor;
 
 // Or use this line for a breakout or shield with an I2C connection:
 //Adafruit_PN532 nfc(PN532_IRQ, PN532_RESET);
+#ifndef SOLOMOTOR
 
 void setup(void) {
-  Serial.begin(115200);
-  while (!Serial) delay(10); // for Leonardo/Micro/Zero
-  Serial.println("Hello!");
+   Serial.begin(115200);
+   while (!Serial) delay(10); // for Leonardo/Micro/Zero
+   Serial.println("Hello!");
 
-  nfc.begin();
+   nfc.begin();
 
-  uint32_t versiondata = nfc.getFirmwareVersion();
-  if (! versiondata) {
-    Serial.print("Didn't find PN53x board");
-    while (1); // halt
-    }
-  servoMotor.attach(9);
+   uint32_t versiondata = nfc.getFirmwareVersion();
+   if (! versiondata) {
+     Serial.print("Didn't find PN53x board");
+     while (1); // halt
+   }
+   servoMotor.attach(9);
 
-  // Got ok data, print it out!
-  Serial.print("Found chip PN5"); Serial.println((versiondata>>24) & 0xFF, HEX);
-  Serial.print("Firmware ver. "); Serial.print((versiondata>>16) & 0xFF, DEC);
-  Serial.print('.'); Serial.println((versiondata>>8) & 0xFF, DEC);
+ // Got ok data, print it out!
+   Serial.print("Found chip PN5"); Serial.println((versiondata>>24) & 0xFF, HEX);
+   Serial.print("Firmware ver. "); Serial.print((versiondata>>16) & 0xFF, DEC);
+   Serial.print('.'); Serial.println((versiondata>>8) & 0xFF, DEC);
 
-  // Set the max number of retry attempts to read from a card
-  // This prevents us from waiting forever for a card, which is
-  // the default behaviour of the PN532.
-  nfc.setPassiveActivationRetries(0xFF);
+   // Set the max number of retry attempts to read from a card
+   // This prevents us from waiting forever for a card, which is
+   // the default behaviour of the PN532.
+   nfc.setPassiveActivationRetries(0xFF);
 
-  // configure board to read RFID tags
-  nfc.SAMConfig();
+ // configure board to read RFID tags
+   nfc.SAMConfig();
 
-  Serial.println("Waiting for an ISO14443A card");
+   Serial.println("Waiting for an ISO14443A card");
+
 }
 
 void loop(void) {
-  boolean success;
+  boolean success;servoMotor.attach(9);
   uint8_t uid[] = { 0, 0, 0, 0, 0, 0, 0 };	// Buffer to store the returned UID
   uint8_t uidLength;				// Length of the UID (4 or 7 bytes depending on ISO14443A card type)
 
@@ -103,3 +108,7 @@ void loop(void) {
     Serial.println("Timed out waiting for a card");
   }
 }
+#endif
+#ifdef SOLOMOTOR
+#include "solo_motor.cpp"
+#endif

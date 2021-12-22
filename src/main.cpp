@@ -1,7 +1,11 @@
 //#include <Wire.h>
+#include <Arduino.h>
 #include <SPI.h>
 #include <Adafruit_PN532.h>
 #include <Servo.h>
+
+#define ABIERTA (1)
+#define CERRADA (0)
 
 // If using the breakout with SPI, define the pins for SPI communication.
 #define PN532_SCK  (12)
@@ -20,6 +24,9 @@
 // Use this line for a breakout with a SPI connection:
 Adafruit_PN532 nfc(PN532_SCK, PN532_MISO, PN532_MOSI, PN532_SS);
 Servo servoMotor;
+boolean estado_puerta;
+long int tiempo = millis();
+void puerta();
 
 // Use this line for a breakout with a hardware SPI connection.  Note that
 // the PN532 SCK, MOSI, and MISO pins need to be connected to the Arduino's
@@ -31,21 +38,22 @@ Servo servoMotor;
 //Adafruit_PN532 nfc(PN532_IRQ, PN532_RESET);
 
 void setup(void) {
+  pinMode(LED_BUILTIN, OUTPUT);
   Serial.begin(9600);
   while (!Serial) delay(10); // for Leonardo/Micro/Zero
-  Serial.println("Hello!");
+  Serial.println("Buenos días, Dave");
 
   nfc.begin();
 
   uint32_t versiondata = nfc.getFirmwareVersion();
   if (! versiondata) {
-    Serial.print("Didn't find PN53x board");
+    Serial.print("No se ha encontrado un módulo PN53x.");
     while (1); // halt
     }
   servoMotor.attach(6);
 
   // Got ok data, print it out!
-  Serial.print("Found chip PN5"); Serial.println((versiondata>>24) & 0xFF, HEX);
+  Serial.print("Encontrado un chip PN5"); Serial.println((versiondata>>24) & 0xFF, HEX);
   Serial.print("Firmware ver. "); Serial.print((versiondata>>16) & 0xFF, DEC);
   Serial.print('.'); Serial.println((versiondata>>8) & 0xFF, DEC);
 
@@ -57,7 +65,7 @@ void setup(void) {
   // configure board to read RFID tags
   nfc.SAMConfig();
 
-  Serial.println("Waiting for an ISO14443A card");
+  Serial.println("Esperando una tarjeta ISO14443A");
 }
 
 void loop(void) {
@@ -68,11 +76,11 @@ void loop(void) {
   // Wait for an ISO14443A type cards (Mifare, etc.).  When one is found
   // 'uid' will be populated with the UID, and uidLength will indicate
   // if the uid is 4 bytes (Mifare Classic) or 7 bytes (Mifare Ultralight)
-  success = nfc.readPassiveTargetID(PN532_MIFARE_ISO14443A, &uid[0], &uidLength);
+  success = nfc.readPassiveTargetID(PN532_MIFARE_ISO14443A, &uid[0], &uidLength, 100);
   uint8_t autorizado[] = { 4, 112, 29, 34, 151, 60, 128 };
 
   if (success) {
-    Serial.println("Found a card!");
+    Serial.println("Tarjeta encontrada!");
     Serial.print("UID Length: ");Serial.print(uidLength, DEC);Serial.println(" bytes");
     Serial.print("UID Value: ");
     bool exito = true;
@@ -85,20 +93,36 @@ void loop(void) {
     }
     Serial.println("");
     if (exito) {
-      // Desplazamos a la posición 90º
-      servoMotor.write(90);
-      // Esperamos 2 segundo
-      delay(2000);
-
-  // Desplazamos a la posición 180º
-      servoMotor.write(-90);
+      if (estado_puerta == CERRADA) {puerta();}
+   }
+   else {
+     puerta();
    }
 	// Wait 1 second before continuing
-	delay(1000);
+  digitalWrite(LED_BUILTIN, HIGH);
+	delay(100);
+  digitalWrite(LED_BUILTIN, LOW);
+	delay(900);
   }
   else
   {
     // PN532 probably timed out waiting for a card
-    Serial.println("Timed out waiting for a card");
+    Serial.println("Tiempo de espera cumplido.");
+  }
+}
+
+void puerta() {
+  if (estado_puerta == ABIERTA) {
+    if ((millis() - tiempo) >2500) {
+      estado_puerta = CERRADA;
+    }
+    else if ((millis() - tiempo) >2000) {
+      servoMotor.write(-90);
+    }
+  } else {
+    estado_puerta = ABIERTA;
+    tiempo = millis();
+    servoMotor.write(90);
+
   }
 }

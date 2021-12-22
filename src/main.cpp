@@ -24,7 +24,7 @@
 // Use this line for a breakout with a SPI connection:
 Adafruit_PN532 nfc(PN532_SCK, PN532_MISO, PN532_MOSI, PN532_SS);
 Servo servoMotor;
-boolean estado_puerta;
+boolean estado_puerta = CERRADA;
 long int tiempo = millis();
 void puerta();
 
@@ -79,11 +79,12 @@ void loop(void) {
   success = nfc.readPassiveTargetID(PN532_MIFARE_ISO14443A, &uid[0], &uidLength, 100);
   uint8_t autorizado[] = { 4, 112, 29, 34, 151, 60, 128 };
 
+  bool exito = true;
   if (success) {
     Serial.println("Tarjeta encontrada!");
     Serial.print("UID Length: ");Serial.print(uidLength, DEC);Serial.println(" bytes");
     Serial.print("UID Value: ");
-    bool exito = true;
+
     for (uint8_t i=0; i < uidLength; i++)
     {
       Serial.print(" 0x");Serial.print(uid[i], HEX);
@@ -93,36 +94,44 @@ void loop(void) {
     }
     Serial.println("");
     if (exito) {
-      if (estado_puerta == CERRADA) {puerta();}
+      Serial.print("exito. Puerta en estado ");
+      Serial.println((int) estado_puerta);
+      puerta(1);
    }
-   else {
-     puerta();
-   }
-	// Wait 1 second before continuing
-  digitalWrite(LED_BUILTIN, HIGH);
-	delay(100);
-  digitalWrite(LED_BUILTIN, LOW);
-	delay(900);
   }
+	// Wait 1 second before continuing
   else
   {
     // PN532 probably timed out waiting for a card
     Serial.println("Tiempo de espera cumplido.");
   }
+  puerta(0);
+  digitalWrite(LED_BUILTIN, HIGH);
+	delay(100);
+  digitalWrite(LED_BUILTIN, LOW);
+	delay(900);
+  /*if ((millis() - tiempo) >7500) {
+    tiempo = millis();
+    Serial.println("tiempo reseteado.");
+  }*/
 }
 
-void puerta() {
-  if (estado_puerta == ABIERTA) {
-    if ((millis() - tiempo) >2500) {
+void puerta(int orden) {
+  if (orden == 0 && estado_puerta == ABIERTA) {
+    if ((millis() - tiempo) >4000) {
       estado_puerta = CERRADA;
+      //tiempo = millis();
     }
     else if ((millis() - tiempo) >2000) {
-      servoMotor.write(-90);
+     Serial.println("Estoy cerrando");
+     servoMotor.write(-90);
     }
-  } else {
+  } else if (orden == 1) {
     estado_puerta = ABIERTA;
     tiempo = millis();
+    Serial.println("Estoy abriendo");
     servoMotor.write(90);
 
+  } else {
   }
 }

@@ -24,7 +24,6 @@
 // Use this line for a breakout with a SPI connection:
 Adafruit_PN532 nfc(PN532_SCK, PN532_MISO, PN532_MOSI, PN532_SS);
 Servo servoMotor;
-boolean estado_puerta = CERRADA;
 long int tiempo = millis();
 void puerta();
 
@@ -36,6 +35,8 @@ void puerta();
 
 // Or use this line for a breakout or shield with an I2C connection:
 //Adafruit_PN532 nfc(PN532_IRQ, PN532_RESET);
+int estado_puerta = CERRADA;
+int orden_puerta = CERRADA;
 
 void setup(void) {
   pinMode(LED_BUILTIN, OUTPUT);
@@ -96,42 +97,39 @@ void loop(void) {
     if (exito) {
       Serial.print("exito. Puerta en estado ");
       Serial.println((int) estado_puerta);
-      puerta(1);
+      orden_puerta = ABIERTA;
    }
   }
-	// Wait 1 second before continuing
   else
   {
     // PN532 probably timed out waiting for a card
     Serial.println("Tiempo de espera cumplido.");
   }
-  puerta(0);
+  puerta();
+
   digitalWrite(LED_BUILTIN, HIGH);
 	delay(100);
   digitalWrite(LED_BUILTIN, LOW);
 	delay(900);
-  /*if ((millis() - tiempo) >7500) {
-    tiempo = millis();
-    Serial.println("tiempo reseteado.");
-  }*/
+
 }
 
-void puerta(int orden) {
-  if (orden == 0 && estado_puerta == ABIERTA) {
-    if ((millis() - tiempo) >4000) {
-      estado_puerta = CERRADA;
-      //tiempo = millis();
-    }
-    else if ((millis() - tiempo) >2000) {
-     Serial.println("Estoy cerrando");
-     servoMotor.write(-90);
-    }
-  } else if (orden == 1) {
+void puerta() {
+  if (orden_puerta == CERRADA && estado_puerta == ABIERTA) { //no hay que abrir, pero está abierta
+     if ((millis() - tiempo) >4000) {  //No hay que abrir, ya ha pasado tiempo, estará cerrada
+       estado_puerta = CERRADA;
+       //tiempo = millis();
+     }
+     else if ((millis() - tiempo) >2000) { //No hay que abrir, está abierta, y hay que cerrarla
+       Serial.println("Estoy cerrando");
+       servoMotor.write(-90);
+     }
+  } else if (orden_puerta == 1) { //Hay que abrir
     estado_puerta = ABIERTA;
     tiempo = millis();
     Serial.println("Estoy abriendo");
     servoMotor.write(90);
-
-  } else {
+    orden_puerta = CERRADA;
+  } else { //No hay que abrir, y está cerrada, no se hace nada
   }
 }

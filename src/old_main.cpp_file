@@ -24,9 +24,9 @@
 // Use this line for a breakout with a SPI connection:
 Adafruit_PN532 nfc(PN532_SCK, PN532_MISO, PN532_MOSI, PN532_SS);
 Servo servoMotor;
-boolean estado_puerta = CERRADA;
+int estado_puerta = CERRADA;
 long int tiempo = millis();
-void puerta();
+void puerta(int orden);
 
 // Use this line for a breakout with a hardware SPI connection.  Note that
 // the PN532 SCK, MOSI, and MISO pins need to be connected to the Arduino's
@@ -36,8 +36,6 @@ void puerta();
 
 // Or use this line for a breakout or shield with an I2C connection:
 //Adafruit_PN532 nfc(PN532_IRQ, PN532_RESET);
-int estado_puerta = CERRADA;
-int orden_puerta = CERRADA;
 
 void setup(void) {
   pinMode(LED_BUILTIN, OUTPUT);
@@ -97,40 +95,43 @@ void loop(void) {
     Serial.println("");
     if (exito) {
       Serial.print("exito. Puerta en estado ");
-      Serial.println((int) estado_puerta);
-      orden_puerta = ABIERTA;
+      Serial.println(estado_puerta);
+      puerta(1);
    }
   }
+	// Wait 1 second before continuing
   else
   {
     // PN532 probably timed out waiting for a card
     Serial.println("Tiempo de espera cumplido.");
   }
-  puerta();
-
+  puerta(0);
   digitalWrite(LED_BUILTIN, HIGH);
 	delay(100);
   digitalWrite(LED_BUILTIN, LOW);
 	delay(900);
-
+  /*if ((millis() - tiempo) >7500) {
+    tiempo = millis();
+    Serial.println("tiempo reseteado.");
+  }*/
 }
 
-void puerta() {
-  if (orden_puerta == CERRADA && estado_puerta == ABIERTA) { //no hay que abrir, pero está abierta
-     if ((millis() - tiempo) >4000) {  //No hay que abrir, ya ha pasado tiempo, estará cerrada
-       estado_puerta = CERRADA;
-       //tiempo = millis();
-     }
-     else if ((millis() - tiempo) >2000) { //No hay que abrir, está abierta, y hay que cerrarla
-       Serial.println("Estoy cerrando");
-       servoMotor.write(-90);
-     }
-  } else if (orden == 1) { //Hay que abrir
+void puerta(int orden) {
+  if (orden == 0 && estado_puerta == ABIERTA) {
+    if ((millis() - tiempo) >4000) {
+      estado_puerta = CERRADA;
+      //tiempo = millis();
+    }
+    else if ((millis() - tiempo) >2000) {
+     Serial.println("Estoy cerrando");
+     servoMotor.write(-90);
+    }
+  } else if (orden == 1) {
     estado_puerta = ABIERTA;
     tiempo = millis();
     Serial.println("Estoy abriendo");
     servoMotor.write(90);
-    orden_puerta = CERRADA;
-  } else { //No hay que abrir, y está cerrada, no se hace nada
+
+  } else {
   }
 }

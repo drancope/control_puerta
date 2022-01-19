@@ -1,4 +1,6 @@
 //#include <Wire.h>
+#define NO_COMPILAR
+#ifndef NO_COMPILAR
 #include <Arduino.h>
 #include <SPI.h>
 #include <Adafruit_PN532.h>
@@ -135,3 +137,4 @@ void puerta(int orden) {
   } else {
   }
 }
+#endif

@@ -78,10 +78,11 @@ void loop(void) {
   // 'uid' will be populated with the UID, and uidLength will indicate
   // if the uid is 4 bytes (Mifare Classic) or 7 bytes (Mifare Ultralight)
   success = nfc.readPassiveTargetID(PN532_MIFARE_ISO14443A, &uid[0], &uidLength, 100);
-  uint8_t autorizado[] = { 4, 112, 29, 34, 151, 60, 128 };
+  const uint8_t autorizado[] = { 4, 112, 29, 34, 151, 60, 128 };
 
-  bool exito = true;
+
   if (success) {
+    bool exito = true;
     Serial.println("Tarjeta encontrada!");
     Serial.print("UID Length: ");Serial.print(uidLength, DEC);Serial.println(" bytes");
     Serial.print("UID Value: ");

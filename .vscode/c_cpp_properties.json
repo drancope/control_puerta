@@ -1,0 +1,62 @@
+//
+// !!! WARNING !!! AUTO-GENERATED FILE!
+// PLEASE DO NOT MODIFY IT AND USE "platformio.ini":
+// https://docs.platformio.org/page/projectconf/section_env_build.html#build-flags
+//
+{
+    "configurations": [
+        {
+            "name": "PlatformIO",
+            "includePath": [
+                "/Users/drancope/Documents/PlatformIO/Projects/control_puerta/include",
+                "/Users/drancope/Documents/PlatformIO/Projects/control_puerta/src",
+                "/Users/drancope/Documents/PlatformIO/Projects/control_puerta/.pio/libdeps/miniatmega328/Adafruit PN532",
+                "/Users/drancope/Documents/PlatformIO/Projects/control_puerta/.pio/libdeps/miniatmega328/Adafruit BusIO",
+                "/Users/drancope/.platformio/packages/framework-arduino-avr/libraries/Wire/src",
+                "/Users/drancope/.platformio/packages/framework-arduino-avr/libraries/SPI/src",
+                "/Users/drancope/Documents/PlatformIO/Projects/control_puerta/.pio/libdeps/miniatmega328/Servo/src",
+                "/Users/drancope/.platformio/packages/framework-arduino-avr/cores/arduino",
+                "/Users/drancope/.platformio/packages/framework-arduino-avr/variants/eightanaloginputs",
+                "/Users/drancope/.platformio/packages/framework-arduino-avr/libraries/EEPROM/src",
+                "/Users/drancope/.platformio/packages/framework-arduino-avr/libraries/HID/src",
+                "/Users/drancope/.platformio/packages/framework-arduino-avr/libraries/SoftwareSerial/src",
+                ""
+            ],
+            "browse": {
+                "limitSymbolsToIncludedHeaders": true,
+                "path": [
+                    "/Users/drancope/Documents/PlatformIO/Projects/control_puerta/include",
+                    "/Users/drancope/Documents/PlatformIO/Projects/control_puerta/src",
+                    "/Users/drancope/Documents/PlatformIO/Projects/control_puerta/.pio/libdeps/miniatmega328/Adafruit PN532",
+                    "/Users/drancope/Documents/PlatformIO/Projects/control_puerta/.pio/libdeps/miniatmega328/Adafruit BusIO",
+                    "/Users/drancope/.platformio/packages/framework-arduino-avr/libraries/Wire/src",
+                    "/Users/drancope/.platformio/packages/framework-arduino-avr/libraries/SPI/src",
+                    "/Users/drancope/Documents/PlatformIO/Projects/control_puerta/.pio/libdeps/miniatmega328/Servo/src",
+                    "/Users/drancope/.platformio/packages/framework-arduino-avr/cores/arduino",
+                    "/Users/drancope/.platformio/packages/framework-arduino-avr/variants/eightanaloginputs",
+                    "/Users/drancope/.platformio/packages/framework-arduino-avr/libraries/EEPROM/src",
+                    "/Users/drancope/.platformio/packages/framework-arduino-avr/libraries/HID/src",
+                    "/Users/drancope/.platformio/packages/framework-arduino-avr/libraries/SoftwareSerial/src",
+                    ""
+                ]
+            },
+            "defines": [
+                "PLATFORMIO=60111",
+                "ARDUINO_AVR_NANO",
+                "F_CPU=16000000L",
+                "ARDUINO_ARCH_AVR",
+                "ARDUINO=10808",
+                "__AVR_ATmega328P__",
+                ""
+            ],
+            "cStandard": "gnu11",
+            "cppStandard": "gnu++11",
+            "compilerPath": "/Users/drancope/.platformio/packages/toolchain-atmelavr@1.70300.191015/bin/avr-gcc",
+            "compilerArgs": [
+                "-mmcu=atmega328p",
+                ""
+            ]
+        }
+    ],
+    "version": 4
+}
